@@ -1,6 +1,6 @@
 # 🛡️ Typosquat Shield
 
-> A Chrome extension that detects lookalike domains, typosquatting attacks, and phishing sites in real time — before you get scammed.
+> A Chrome extension that detects lookalike domains, typosquatting attacks, and phishing sites in real-time before you get scammed.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-00e5a0?style=flat-square)
 ![Manifest](https://img.shields.io/badge/manifest-v3-00e5a0?style=flat-square)
@@ -35,17 +35,20 @@ Attackers register domains like `arnazon.com` or `paypa1.com` — visually ident
 ### Warning Page
 When a suspicious domain is detected, you're redirected here before the page loads:
 
-> *(Add screenshot here)*
+> <img width="704" height="968" alt="image" src="https://github.com/user-attachments/assets/e004adfd-1b3d-4cb5-aa46-192584386602" />
+
 
 ### Dashboard
 Full threat history with detection source, VirusTotal results, and domain age:
 
-> *(Add screenshot here)*
+> <img width="1895" height="924" alt="image" src="https://github.com/user-attachments/assets/a22f64e3-595a-400b-ab48-3f5df6b0e32c" />
+
 
 ### Popup
 Quick status view with live threat stats:
 
-> *(Add screenshot here)*
+> <img width="386" height="515" alt="image" src="https://github.com/user-attachments/assets/eb763e4b-77df-4fdb-aa64-c5abc4bdc9ac" />
+
 
 ---
 
@@ -102,7 +105,7 @@ When you navigate to any URL, the extension runs **three checks in parallel**:
 URL entered
     │
     ├── 1. Levenshtein Check
-    │       Compare domain against 50+ trusted domains
+    │       Compare the domain against 50+ trusted domains
     │       Flag if edit distance ≤ 3
     │
     ├── 2. VirusTotal API
@@ -136,7 +139,7 @@ const LEVENSHTEIN_THRESHOLD = 3;
 
 ## 🛡️ Trusted Domains List
 
-The extension checks against 50+ commonly impersonated domains including:
+The extension checks against 50+ commonly impersonated domains, including:
 
 Google, Gmail, YouTube, Facebook, Instagram, Twitter, Amazon, eBay, PayPal, Apple, Microsoft, GitHub, LinkedIn, Netflix, Spotify, Discord, Coinbase, Binance, Chase, Bank of America, and more.
 

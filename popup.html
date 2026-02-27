@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Typosquat Shield</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:    #ff3b5c;
+      --green:  #00e5a0;
+      --yellow: #ffb830;
+      --bg:     #080b14;
+      --card:   #0e1320;
+      --border: #1a2035;
+      --muted:  #4a5568;
+      --text:   #e2e8f0;
+    }
+
+    body {
+      width: 310px;
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ── Header ── */
+    .header {
+      padding: 18px 18px 14px;
+      background: linear-gradient(135deg, #0e1320, #111827);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--green), #00c78a);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 16px rgba(0,229,160,0.25);
+    }
+
+    .header-text h1 { font-size: 15px; font-weight: 800; color: #fff; }
+    .header-text p  { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: 'Space Mono', monospace; }
+
+    /* ── Status card ── */
+    .status {
+      margin: 14px 14px 0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status.safe   { background: rgba(0,229,160,0.07); border: 1px solid rgba(0,229,160,0.18); }
+    .status.danger { background: rgba(255,59,92,0.08); border: 1px solid rgba(255,59,92,0.22); }
+    .status.idle   { background: rgba(74,85,104,0.1);  border: 1px solid var(--border); }
+
+    .status-icon { font-size: 26px; flex-shrink: 0; }
+    .status-title { font-size: 13px; font-weight: 700; }
+    .status.safe   .status-title { color: var(--green); }
+    .status.danger .status-title { color: var(--red); }
+    .status.idle   .status-title { color: var(--muted); }
+    .status-sub { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: 'Space Mono', monospace; }
+
+    /* ── Current domain ── */
+    .domain-pill {
+      margin: 10px 14px 0;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+    .domain-pill .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+    .domain-pill .value { font-family: 'Space Mono', monospace; font-size: 12px; color: #8899bb; word-break: break-all; }
+
+    /* ── Stats ── */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin: 10px 14px 0;
+    }
+    .stat {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+    .stat .n { font-size: 22px; font-weight: 800; color: var(--green); }
+    .stat.r   .n { color: var(--red); }
+    .stat.y   .n { color: var(--yellow); }
+    .stat .l { font-size: 10px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
+
+    /* ── Buttons ── */
+    .actions { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 7px; }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--green), #00c78a);
+      color: #050a0a;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,229,160,0.25); }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .btn-ghost:hover { border-color: var(--green); color: var(--green); }
+
+    /* ── Footer ── */
+    .foot {
+      padding: 8px 14px 12px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: #1e2535;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">🛡️</div>
+    <div class="header-text">
+      <h1>Typosquat Shield</h1>
+      <p>REAL-TIME PROTECTION ACTIVE</p>
+    </div>
+  </div>
+
+  <div class="status idle" id="statusCard">
+    <span class="status-icon" id="statusIcon">🔍</span>
+    <div>
+      <div class="status-title" id="statusTitle">Checking...</div>
+      <div class="status-sub"  id="statusSub">Analyzing current domain</div>
+    </div>
+  </div>
+
+  <div class="domain-pill">
+    <div class="label">Current Domain</div>
+    <div class="value" id="currentDomain">—</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat r">
+      <div class="n" id="totalBlocked">0</div>
+      <div class="l">Threats Blocked</div>
+    </div>
+    <div class="stat y">
+      <div class="n" id="totalProceeded">0</div>
+      <div class="l">Warnings Bypassed</div>
+    </div>
+    <div class="stat">
+      <div class="n" id="whitelistCount">0</div>
+      <div class="l">Whitelisted</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" id="openDashboard">📊 Open Dashboard</button>
+    <button class="btn btn-ghost"   id="manageWhitelist">⚙️ Manage Whitelist</button>
+  </div>
+
+  <div class="foot">TYPOSQUAT SHIELD v1.0</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

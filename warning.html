@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>⚠️ Suspicious Site — Typosquat Shield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:    #ff3b5c;
+      --green:  #00e5a0;
+      --yellow: #ffb830;
+      --bg:     #080b14;
+      --card:   #0e1320;
+      --border: #1a2035;
+      --muted:  #4a5568;
+      --text:   #e2e8f0;
+    }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 10%, rgba(255,59,92,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 90%, rgba(255,59,92,0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* Scanline effect */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.03) 2px,
+        rgba(0,0,0,0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .card {
+      position: relative;
+      z-index: 2;
+      background: var(--card);
+      border: 1px solid var(--red);
+      border-radius: 20px;
+      padding: 44px 40px;
+      max-width: 560px;
+      width: 100%;
+      box-shadow:
+        0 0 0 1px rgba(255,59,92,0.1),
+        0 0 80px rgba(255,59,92,0.12),
+        0 30px 80px rgba(0,0,0,0.6);
+      animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Top badge */
+    .threat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,59,92,0.1);
+      border: 1px solid rgba(255,59,92,0.3);
+      border-radius: 30px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .pulse-dot {
+      width: 7px; height: 7px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: pulse 1.4s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(1.4); }
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    h1 span { color: var(--red); }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    /* Domain comparison */
+    .domain-box {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .domain-row {
+      display: flex;
+      align-items: center;
+      padding: 14px 18px;
+      gap: 14px;
+    }
+
+    .domain-row + .domain-row { border-top: 1px solid var(--border); }
+
+    .domain-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      min-width: 80px;
+    }
+
+    .domain-value {
+      font-family: 'Space Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      flex: 1;
+      word-break: break-all;
+    }
+
+    .domain-value.bad  { color: var(--red); }
+    .domain-value.good { color: var(--green); }
+
+    .chip {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .chip.danger { background: rgba(255,59,92,0.12); color: var(--red);   border: 1px solid rgba(255,59,92,0.25); }
+    .chip.safe   { background: rgba(0,229,160,0.10); color: var(--green); border: 1px solid rgba(0,229,160,0.2); }
+
+    /* Info blocks */
+    .info-block {
+      border-radius: 10px;
+      padding: 13px 16px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      line-height: 1.7;
+      display: none;
+    }
+    .info-block.visible { display: block; }
+    .info-block.red    { background: rgba(255,59,92,0.07); border: 1px solid rgba(255,59,92,0.2); color: #ff8fa3; }
+    .info-block.yellow { background: rgba(255,184,48,0.07); border: 1px solid rgba(255,184,48,0.2); color: #ffd080; }
+    .info-block.blue   { background: rgba(99,179,237,0.07); border: 1px solid rgba(99,179,237,0.2); color: #90cdf4; }
+    .info-block strong { font-weight: 700; }
+
+    /* Distance meter */
+    .distance-row {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .distance-row span { color: var(--red); font-weight: 700; font-family: 'Space Mono', monospace; }
+
+    /* Warnings list */
+    .warnings {
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+      margin-bottom: 24px;
+    }
+
+    .warn-item {
+      display: flex;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      padding: 6px 0;
+      line-height: 1.5;
+    }
+
+    /* Buttons */
+    .btns { display: flex; flex-direction: column; gap: 10px; }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-safe {
+      background: linear-gradient(135deg, var(--green), #00c78a);
+      color: #050a0a;
+    }
+    .btn-safe:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,229,160,0.3);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .btn-ghost:hover { border-color: var(--red); color: var(--red); }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 11px;
+      color: #1e2535;
+      font-family: 'Space Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <div class="threat-badge">
+    <div class="pulse-dot"></div>
+    Threat Detected
+  </div>
+
+  <h1>This site may be <span>fake</span>.</h1>
+
+  <p class="subtitle">
+    The domain you're visiting looks suspiciously similar to a trusted site —
+    a classic phishing technique used to steal your credentials and payment info.
+  </p>
+
+  <!-- Domain comparison -->
+  <div class="domain-box">
+    <div class="domain-row">
+      <span class="domain-label">You visited</span>
+      <span class="domain-value bad" id="suspiciousDomain">—</span>
+      <span class="chip danger">⚠ Suspicious</span>
+    </div>
+    <div class="domain-row">
+      <span class="domain-label">Looks like</span>
+      <span class="domain-value good" id="lookalikeDomain">—</span>
+      <span class="chip safe">✓ Trusted</span>
+    </div>
+  </div>
+
+  <!-- Distance info -->
+  <div class="distance-row" id="distanceRow">
+    📏 Only <span id="distanceValue">?</span> character(s) different from the real domain.
+  </div>
+
+  <!-- Homoglyph warning -->
+  <div class="info-block blue" id="homoglyphBlock">
+    🔡 <strong>Unicode Spoofing Detected</strong><br>
+    This domain uses visually identical characters (like Cyrillic letters) that look
+    like Latin letters — a sophisticated attack to fool the human eye.
+  </div>
+
+  <!-- VirusTotal result -->
+  <div class="info-block red" id="vtBlock">
+    🔬 <strong>VirusTotal Scan</strong><br>
+    <span id="vtDetails"></span>
+  </div>
+
+  <!-- Domain age -->
+  <div class="info-block yellow" id="ageBlock">
+    📅 <strong>Newly Registered Domain</strong><br>
+    <span id="ageDetails"></span>
+  </div>
+
+  <!-- Detection source -->
+  <div class="info-block blue visible" id="detectionSource" style="margin-bottom:20px">
+    <span id="detectionText"></span>
+  </div>
+
+  <!-- What not to do -->
+  <div class="warnings">
+    <div class="warn-item">🔑 Do <strong>&nbsp;NOT&nbsp;</strong> enter your password or PIN</div>
+    <div class="warn-item">💳 Do <strong>&nbsp;NOT&nbsp;</strong> enter payment or banking info</div>
+    <div class="warn-item">📥 Do <strong>&nbsp;NOT&nbsp;</strong> download any files from this page</div>
+    <div class="warn-item">👤 Do <strong>&nbsp;NOT&nbsp;</strong> submit any personal details</div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="btns">
+    <button class="btn btn-safe" id="goBack">← Take Me to Safety</button>
+    <button class="btn btn-ghost" id="proceedAnyway">I understand the risk — proceed anyway</button>
+  </div>
+
+  <div class="footer">TYPOSQUAT SHIELD v1.0 · STAY SAFE ONLINE</div>
+</div>
+
+<script src="warning.js"></script>
+</body>
+</html>
